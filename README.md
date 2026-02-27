@@ -10,9 +10,6 @@
 - 🏦 Blood Banks
 - 🏥 Hospitals
 - 👤 Patients / Emergency Users
-# into a unified, intelligent, real-time ecosystem.
-
-# This system transforms reactive emergency management into predictive, optimized, and life-saving orchestration.
 ---
 ## 🚨 Problem Statement
 
