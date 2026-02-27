@@ -1,0 +1,311 @@
+import React, { useMemo } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { 
+  AreaChart, Area, LineChart, Line, BarChart, Bar, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell
+} from 'recharts';
+import { TrendingUp, AlertTriangle, Activity, Skull, Thermometer, MapPin, Droplet } from "lucide-react";
+import { predictShortage, BLOOD_GROUPS, getSeasonalFactor } from "@/components/shared/aiSimulation";
+import BloodGroupBadge from "@/components/shared/BloodGroupBadge";
+
+const DISTRICTS = ['North Zone', 'South Zone', 'East Zone', 'West Zone', 'Central', 'Outer Ring'];
+
+export default function AdminAIAnalytics({ bloodUnits, bloodBanks, requests }) {
+  const stockByGroup = useMemo(() => BLOOD_GROUPS.reduce((acc, group) => {
+    acc[group] = bloodUnits.filter(u => u.blood_group === group && u.status === 'available').length;
+    return acc;
+  }, {}), [bloodUnits]);
+
+  const avgDailyDemand = useMemo(() => BLOOD_GROUPS.reduce((acc, group) => {
+    acc[group] = Math.floor(Math.random() * 10) + 5;
+    return acc;
+  }, {}), []);
+
+  const predictions = useMemo(() => predictShortage({ currentStock: stockByGroup, avgDailyDemand }), [stockByGroup, avgDailyDemand]);
+  
+  // 5-7 day forecast data
+  const forecastData = predictions.map(p => ({
+    day: `Day ${p.day}`,
+    totalStock: BLOOD_GROUPS.reduce((sum, g) => sum + (p[g]?.remainingStock || 0), 0),
+    demand: BLOOD_GROUPS.reduce((sum, g) => sum + (p[g]?.predictedDemand || 0), 0),
+    riskScore: Math.round(BLOOD_GROUPS.reduce((sum, g) => sum + (p[g]?.shortageRisk || 0), 0) / BLOOD_GROUPS.length)
+  }));
+
+  // Demand trend (last 30 days simulated)
+  const trendData = Array.from({ length: 14 }, (_, i) => {
+    const d = new Date(); d.setDate(d.getDate() - (13 - i));
+    const label = d.toLocaleDateString('en', { weekday: 'short', month: 'short', day: 'numeric' });
+    const seasonal = getSeasonalFactor(d);
+    return {
+      date: label,
+      demand: Math.round((40 + Math.random() * 30) * seasonal),
+      fulfilled: Math.round((35 + Math.random() * 25) * seasonal)
+    };
+  });
+
+  // Seasonal spike detection
+  const seasonalData = [
+    { month: 'Jan', factor: 1.2, label: 'Winter Peak', risk: 72 },
+    { month: 'Feb', factor: 1.0, label: 'Normal', risk: 30 },
+    { month: 'Mar', factor: 1.0, label: 'Normal', risk: 28 },
+    { month: 'Apr', factor: 0.9, label: 'Low', risk: 20 },
+    { month: 'May', factor: 0.95, label: 'Normal', risk: 25 },
+    { month: 'Jun', factor: 1.1, label: 'Pre-Monsoon', risk: 55 },
+    { month: 'Jul', factor: 1.3, label: 'Monsoon Peak', risk: 80 },
+    { month: 'Aug', factor: 1.35, label: 'Monsoon Peak', risk: 85 },
+    { month: 'Sep', factor: 1.2, label: 'Monsoon', risk: 65 },
+    { month: 'Oct', factor: 1.0, label: 'Normal', risk: 32 },
+    { month: 'Nov', factor: 1.1, label: 'Pre-Winter', risk: 48 },
+    { month: 'Dec', factor: 1.25, label: 'Winter', risk: 70 },
+  ];
+
+  const currentMonth = new Date().getMonth();
+  const currentSeason = seasonalData[currentMonth];
+
+  // District risk heatmap
+  const districtRisk = DISTRICTS.map((district, i) => {
+    const bankCount = bloodBanks.filter(b => b.district === district).length || Math.floor(Math.random() * 3) + 1;
+    const districtUnits = bloodUnits.filter(u => u.district === district).length || Math.floor(Math.random() * 200) + 50;
+    const districtRequests = requests.filter(r => r.district === district).length || Math.floor(Math.random() * 30) + 5;
+    const riskScore = Math.min(100, Math.round((districtRequests * 5) / Math.max(1, districtUnits / 10)));
+    return {
+      district,
+      riskScore: Math.max(10, riskScore + Math.floor(Math.random() * 30)),
+      units: districtUnits,
+      banks: bankCount,
+      requests: districtRequests
+    };
+  });
+
+  // Mortality risk (simulated)
+  const mortalityRisk = useMemo(() => {
+    const criticalPending = requests.filter(r => r.urgency === 'critical' && r.status === 'pending').length;
+    const zeroStockGroups = BLOOD_GROUPS.filter(g => (stockByGroup[g] || 0) === 0).length;
+    const baseRisk = (criticalPending * 8) + (zeroStockGroups * 12);
+    return Math.min(95, Math.max(5, baseRisk + Math.floor(Math.random() * 15)));
+  }, [requests, stockByGroup]);
+
+  // Hospital blood usage patterns
+  const hospitalUsage = bloodBanks.slice(0, 6).map((bank, i) => ({
+    name: bank.name || `Hospital ${i + 1}`,
+    'O+': Math.floor(Math.random() * 40) + 10,
+    'A+': Math.floor(Math.random() * 30) + 8,
+    'B+': Math.floor(Math.random() * 25) + 5,
+    'AB+': Math.floor(Math.random() * 15) + 3,
+  }));
+
+  const getRiskColor = (risk) => {
+    if (risk >= 70) return { bg: 'bg-red-500', text: 'text-red-600', border: 'border-red-200', light: 'bg-red-50' };
+    if (risk >= 40) return { bg: 'bg-orange-500', text: 'text-orange-600', border: 'border-orange-200', light: 'bg-orange-50' };
+    return { bg: 'bg-green-500', text: 'text-green-600', border: 'border-green-200', light: 'bg-green-50' };
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Mortality Risk Indicator */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className={`border-2 ${mortalityRisk >= 50 ? 'border-red-300 bg-red-50' : mortalityRisk >= 30 ? 'border-orange-300 bg-orange-50' : 'border-green-300 bg-green-50'}`}>
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Skull className={`w-5 h-5 ${mortalityRisk >= 50 ? 'text-red-600' : mortalityRisk >= 30 ? 'text-orange-600' : 'text-green-600'}`} />
+                <span className="font-semibold text-slate-800 text-sm">Mortality Risk Index</span>
+              </div>
+              <Badge className={mortalityRisk >= 50 ? 'bg-red-500 text-white' : mortalityRisk >= 30 ? 'bg-orange-500 text-white' : 'bg-green-500 text-white'}>
+                {mortalityRisk >= 50 ? 'HIGH' : mortalityRisk >= 30 ? 'MODERATE' : 'LOW'}
+              </Badge>
+            </div>
+            <p className={`text-5xl font-bold ${mortalityRisk >= 50 ? 'text-red-600' : mortalityRisk >= 30 ? 'text-orange-600' : 'text-green-600'}`}>{mortalityRisk}%</p>
+            <p className="text-xs text-slate-500 mt-2">Simulated risk based on critical pending + zero-stock groups</p>
+            <div className="mt-3 h-2 bg-slate-200 rounded-full">
+              <div className={`h-2 rounded-full transition-all ${mortalityRisk >= 50 ? 'bg-red-500' : mortalityRisk >= 30 ? 'bg-orange-500' : 'bg-green-500'}`} style={{ width: `${mortalityRisk}%` }} />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className={`border-2 ${currentSeason.risk >= 60 ? 'border-orange-300 bg-orange-50' : 'border-blue-300 bg-blue-50'}`}>
+          <CardContent className="p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Thermometer className={`w-5 h-5 ${currentSeason.risk >= 60 ? 'text-orange-600' : 'text-blue-600'}`} />
+                <span className="font-semibold text-slate-800 text-sm">Seasonal Spike Detection</span>
+              </div>
+              {currentSeason.risk >= 60 && <Badge className="bg-orange-500 text-white animate-pulse">SPIKE</Badge>}
+            </div>
+            <p className={`text-2xl font-bold ${currentSeason.risk >= 60 ? 'text-orange-600' : 'text-blue-600'}`}>{currentSeason.label}</p>
+            <p className="text-sm text-slate-600 mt-1">Demand factor: <strong>×{currentSeason.factor}</strong></p>
+            <p className="text-xs text-slate-500 mt-2">Risk level this month: <strong>{currentSeason.risk}%</strong></p>
+            <div className="mt-3 h-2 bg-slate-200 rounded-full">
+              <div className="h-2 rounded-full bg-orange-500 transition-all" style={{ width: `${currentSeason.risk}%` }} />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-2 border-purple-300 bg-purple-50">
+          <CardContent className="p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <Activity className="w-5 h-5 text-purple-600" />
+              <span className="font-semibold text-slate-800 text-sm">Shortage Probability</span>
+            </div>
+            <div className="space-y-2">
+              {BLOOD_GROUPS.slice(0, 4).map(group => {
+                const risk = predictions[0]?.[group]?.shortageRisk || 0;
+                return (
+                  <div key={group} className="flex items-center gap-2">
+                    <BloodGroupBadge group={group} size="sm" />
+                    <div className="flex-1 h-2 bg-slate-200 rounded-full">
+                      <div className={`h-2 rounded-full ${risk >= 70 ? 'bg-red-500' : risk >= 40 ? 'bg-orange-500' : 'bg-green-500'}`} style={{ width: `${risk}%` }} />
+                    </div>
+                    <span className="text-xs font-medium text-slate-600 w-8">{risk}%</span>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* 5-7 Day Shortage Forecast */}
+      <Card className="bg-white border border-slate-100">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base font-semibold text-slate-800 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-blue-500" />
+            5–7 Day Shortage Forecast
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={forecastData}>
+                <defs>
+                  <linearGradient id="stockGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.05} />
+                  </linearGradient>
+                  <linearGradient id="demandGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0.05} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis dataKey="day" tick={{ fontSize: 12, fill: '#64748b' }} />
+                <YAxis tick={{ fontSize: 12, fill: '#64748b' }} />
+                <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }} />
+                <Legend />
+                <Area type="monotone" dataKey="totalStock" stroke="#3b82f6" fill="url(#stockGrad)" strokeWidth={2} name="Predicted Stock" />
+                <Area type="monotone" dataKey="demand" stroke="#ef4444" fill="url(#demandGrad)" strokeWidth={2} name="Predicted Demand" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Demand Trend + Seasonal */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        <Card className="bg-white border border-slate-100">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-semibold text-slate-800">14-Day Demand Trend</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-52">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={trendData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#64748b' }} interval={3} />
+                  <YAxis tick={{ fontSize: 12, fill: '#64748b' }} />
+                  <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }} />
+                  <Legend />
+                  <Line type="monotone" dataKey="demand" stroke="#ef4444" strokeWidth={2} dot={false} name="Demand" />
+                  <Line type="monotone" dataKey="fulfilled" stroke="#22c55e" strokeWidth={2} dot={false} name="Fulfilled" />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white border border-slate-100">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-semibold text-slate-800">Seasonal Demand Factors (Monthly)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-52">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={seasonalData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#64748b' }} />
+                  <YAxis tick={{ fontSize: 12, fill: '#64748b' }} domain={[0, 100]} />
+                  <Tooltip contentStyle={{ borderRadius: '8px' }} />
+                  <Bar dataKey="risk" name="Risk %" radius={[4, 4, 0, 0]}>
+                    {seasonalData.map((entry, index) => (
+                      <Cell key={index} fill={entry.risk >= 70 ? '#ef4444' : entry.risk >= 50 ? '#f97316' : entry.risk >= 30 ? '#eab308' : '#22c55e'} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Risk Heatmap (District-wise) */}
+      <Card className="bg-white border border-slate-100">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base font-semibold text-slate-800 flex items-center gap-2">
+            <MapPin className="w-5 h-5 text-red-500" />
+            Risk Heatmap — District-wise
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            {districtRisk.map(d => {
+              const rc = getRiskColor(d.riskScore);
+              return (
+                <div key={d.district} className={`p-4 rounded-xl border-2 ${rc.border} ${rc.light} text-center`}>
+                  <div className={`text-2xl font-bold ${rc.text}`}>{d.riskScore}%</div>
+                  <div className="text-xs font-semibold text-slate-700 mt-1">{d.district}</div>
+                  <div className="mt-2 space-y-1">
+                    <div className={`w-full h-2 rounded-full bg-slate-200`}>
+                      <div className={`h-2 rounded-full ${rc.bg}`} style={{ width: `${d.riskScore}%` }} />
+                    </div>
+                  </div>
+                  <div className="mt-2 text-xs text-slate-500">
+                    <div>{d.units} units</div>
+                    <div>{d.requests} requests</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Blood Usage Patterns by Hospital */}
+      <Card className="bg-white border border-slate-100">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base font-semibold text-slate-800 flex items-center gap-2">
+            <Droplet className="w-5 h-5 text-red-500" />
+            Blood Usage Patterns by Hospital
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={hospitalUsage} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis type="number" tick={{ fontSize: 11, fill: '#64748b' }} />
+                <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: '#64748b' }} width={100} />
+                <Tooltip contentStyle={{ borderRadius: '8px' }} />
+                <Legend />
+                <Bar dataKey="O+" fill="#ef4444" radius={[0, 4, 4, 0]} stackId="a" />
+                <Bar dataKey="A+" fill="#f97316" radius={[0, 0, 0, 0]} stackId="a" />
+                <Bar dataKey="B+" fill="#3b82f6" radius={[0, 0, 0, 0]} stackId="a" />
+                <Bar dataKey="AB+" fill="#8b5cf6" radius={[0, 4, 4, 0]} stackId="a" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
