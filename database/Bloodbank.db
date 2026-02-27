@@ -1,0 +1,55 @@
+{
+  "name": "BloodBank",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "district": {
+      "type": "string"
+    },
+    "area": {
+      "type": "string",
+      "description": "Sub-area or locality within district"
+    },
+    "address": {
+      "type": "string"
+    },
+    "latitude": {
+      "type": "number"
+    },
+    "longitude": {
+      "type": "number"
+    },
+    "contact_phone": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "license_number": {
+      "type": "string"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "operating_hours": {
+      "type": "string"
+    },
+    "capacity": {
+      "type": "number",
+      "description": "Maximum storage capacity in units"
+    },
+    "rating": {
+      "type": "number"
+    },
+    "manager_email": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "district"
+  ]
+}

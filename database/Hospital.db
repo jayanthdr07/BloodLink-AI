@@ -1,0 +1,59 @@
+{
+  "name": "Hospital",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "district": {
+      "type": "string"
+    },
+    "area": {
+      "type": "string",
+      "description": "Sub-area or locality within district"
+    },
+    "address": {
+      "type": "string"
+    },
+    "latitude": {
+      "type": "number"
+    },
+    "longitude": {
+      "type": "number"
+    },
+    "contact_phone": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "hospital_type": {
+      "type": "string",
+      "enum": [
+        "government",
+        "private",
+        "trust"
+      ]
+    },
+    "bed_capacity": {
+      "type": "number"
+    },
+    "icu_capacity": {
+      "type": "number"
+    },
+    "current_icu_load": {
+      "type": "number"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "manager_email": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "district"
+  ]
+}

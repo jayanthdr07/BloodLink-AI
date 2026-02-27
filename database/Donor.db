@@ -1,0 +1,68 @@
+{
+  "name": "Donor",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "blood_group": {
+      "type": "string",
+      "enum": [
+        "A+",
+        "A-",
+        "B+",
+        "B-",
+        "AB+",
+        "AB-",
+        "O+",
+        "O-"
+      ]
+    },
+    "district": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "date_of_birth": {
+      "type": "string",
+      "format": "date"
+    },
+    "last_donation_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "total_donations": {
+      "type": "number",
+      "default": 0
+    },
+    "reliability_score": {
+      "type": "number",
+      "default": 100
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_eligible": {
+      "type": "boolean",
+      "default": true
+    },
+    "preferred_blood_bank_id": {
+      "type": "string"
+    },
+    "health_conditions": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "blood_group"
+  ]
+}

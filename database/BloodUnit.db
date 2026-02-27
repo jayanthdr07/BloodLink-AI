@@ -1,0 +1,64 @@
+{
+  "name": "BloodUnit",
+  "type": "object",
+  "properties": {
+    "blood_group": {
+      "type": "string",
+      "enum": [
+        "A+",
+        "A-",
+        "B+",
+        "B-",
+        "AB+",
+        "AB-",
+        "O+",
+        "O-"
+      ],
+      "description": "Blood group type"
+    },
+    "blood_bank_id": {
+      "type": "string",
+      "description": "Reference to blood bank"
+    },
+    "blood_bank_name": {
+      "type": "string"
+    },
+    "collection_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "expiry_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "available",
+        "reserved",
+        "dispatched",
+        "expired",
+        "used"
+      ],
+      "default": "available"
+    },
+    "donor_id": {
+      "type": "string"
+    },
+    "district": {
+      "type": "string"
+    },
+    "unit_volume_ml": {
+      "type": "number",
+      "default": 450
+    },
+    "price": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "blood_group",
+    "blood_bank_id",
+    "expiry_date"
+  ]
+}

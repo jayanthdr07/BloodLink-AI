@@ -1,0 +1,57 @@
+{
+  "name": "DeliveryAgent",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "vehicle_type": {
+      "type": "string",
+      "enum": [
+        "bike",
+        "ambulance",
+        "van"
+      ]
+    },
+    "vehicle_number": {
+      "type": "string"
+    },
+    "current_latitude": {
+      "type": "number"
+    },
+    "current_longitude": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "available",
+        "on_delivery",
+        "offline"
+      ],
+      "default": "available"
+    },
+    "district": {
+      "type": "string"
+    },
+    "total_deliveries": {
+      "type": "number",
+      "default": 0
+    },
+    "rating": {
+      "type": "number",
+      "default": 5
+    },
+    "blood_bank_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "phone",
+    "vehicle_type"
+  ]
+}

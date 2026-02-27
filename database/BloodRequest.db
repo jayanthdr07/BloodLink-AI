@@ -1,0 +1,115 @@
+{
+  "name": "BloodRequest",
+  "type": "object",
+  "properties": {
+    "request_number": {
+      "type": "string"
+    },
+    "requester_type": {
+      "type": "string",
+      "enum": [
+        "hospital",
+        "patient"
+      ]
+    },
+    "requester_id": {
+      "type": "string"
+    },
+    "requester_name": {
+      "type": "string"
+    },
+    "hospital_id": {
+      "type": "string"
+    },
+    "hospital_name": {
+      "type": "string"
+    },
+    "blood_group": {
+      "type": "string",
+      "enum": [
+        "A+",
+        "A-",
+        "B+",
+        "B-",
+        "AB+",
+        "AB-",
+        "O+",
+        "O-"
+      ]
+    },
+    "quantity": {
+      "type": "number"
+    },
+    "urgency": {
+      "type": "string",
+      "enum": [
+        "routine",
+        "urgent",
+        "critical"
+      ],
+      "default": "routine"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected",
+        "in_transit",
+        "delivered",
+        "cancelled"
+      ],
+      "default": "pending"
+    },
+    "blood_bank_id": {
+      "type": "string"
+    },
+    "blood_bank_name": {
+      "type": "string"
+    },
+    "patient_name": {
+      "type": "string"
+    },
+    "patient_condition": {
+      "type": "string"
+    },
+    "district": {
+      "type": "string"
+    },
+    "delivery_address": {
+      "type": "string"
+    },
+    "estimated_delivery": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "actual_delivery": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "golden_hour_deadline": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "total_cost": {
+      "type": "number"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "rejection_reason": {
+      "type": "string"
+    },
+    "delivery_agent_id": {
+      "type": "string"
+    },
+    "survival_probability": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "blood_group",
+    "quantity",
+    "urgency"
+  ]
+}

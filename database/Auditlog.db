@@ -1,0 +1,46 @@
+{
+  "name": "AuditLog",
+  "type": "object",
+  "properties": {
+    "action_type": {
+      "type": "string",
+      "enum": [
+        "request_created",
+        "request_approved",
+        "request_rejected",
+        "blood_dispatched",
+        "blood_delivered",
+        "redistribution_approved",
+        "inventory_updated",
+        "user_verified",
+        "alert_triggered",
+        "price_changed"
+      ]
+    },
+    "entity_type": {
+      "type": "string"
+    },
+    "entity_id": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "user_role": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "district": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "action_type",
+    "description"
+  ]
+}
