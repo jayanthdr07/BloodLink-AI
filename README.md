@@ -3,7 +3,7 @@
 
 ## 📌 Overview
 
-- LifeLine360 is a district-level AI-enabled blood management and emergency coordination platform designed to eliminate fragmentation, inefficiency, and wastage in blood supply systems.
+- BloodLink-AI is a district-level AI-enabled blood management and emergency coordination platform designed to eliminate fragmentation, inefficiency, and wastage in blood supply systems.
 
 # It connects:
 - 🏛 District Health Authorities
@@ -41,7 +41,7 @@ During healthcare crises (e.g., COVID-19, accident surges, surgical backlogs), b
 
 ## 💡 Our Solution
 
-- LifeLine360 introduces a Unified District Blood Orchestration System that:
+- BloodLink-AI introduces a Unified District Blood Orchestration System that:
 - Integrates blood banks into one intelligent platform
 - Enables AI-based matching and allocation
 - Tracks expiry using FIFO logic
