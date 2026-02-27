@@ -123,7 +123,7 @@ Calculates system preparedness using supply, demand, and emergency load.
 ##  Screenshots
 
 ### Home Screen
-![Home Screen](home.png)
+![Home Screen](home.jpeg)
 
 ### Patient
 ![Patient Screen](patient.png)
