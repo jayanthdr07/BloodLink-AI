@@ -120,7 +120,13 @@ Calculates system preparedness using supply, demand, and emergency load.
 - Transparent availability
 - Improved survival chances
  ---
+##  Screenshots
 
+### Home Screen
+![Home Screen](home.png)
+
+### Patient
+![Patient Screen](patient.png)
 ## 📌 Future Enhancements
 
 - Real-time map heat overlays
