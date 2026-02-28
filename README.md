@@ -124,8 +124,15 @@ Calculates system preparedness using supply, demand, and emergency load.
 ### Home Screen
 ![Home Screen](home.jpeg)
 
+### admin
+![Admin Screen](admin.png)
+
+### Hospital
+![hospital Screen](hospital.png)
+
 ### Patient
 ![Patient Screen](patient.png)
+---
 ## 📌 Future Enhancements
 
 - Real-time map heat overlays
