@@ -1,4 +1,3 @@
-**PROJECT READme**
 ## **BloodLink-AI**
 
 ## 📌 Overview
