@@ -35,7 +35,7 @@ During healthcare crises (e.g., COVID-19, accident surges, surgical backlogs), b
 - Lack of Governance Control
 
 
-## 💡 Our Solution
+## 💡 *Our Solution*
 
 - BloodLink-AI introduces a Unified District Blood Orchestration System that:
 - Integrates blood banks into one intelligent platform
