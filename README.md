@@ -147,3 +147,6 @@ Calculates system preparedness using supply, demand, and emergency load.
 - Role-based access control
 - Module-level authorization
 - Audit log schema
+## Author
+
+*JAYANTH D R*
