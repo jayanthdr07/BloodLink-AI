@@ -23,7 +23,7 @@ During healthcare crises (e.g., COVID-19, accident surges, surgical backlogs), b
 ---
 
 
-## Failure Cases Observed
+## Failure Cases Observed.
 - Fragmented Inventory Systems
 
 - Expiry-Based Wastage
