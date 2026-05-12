@@ -4,7 +4,7 @@
 
 - BloodLink-AI is a district-level AI-enabled blood management and emergency coordination platform designed to eliminate fragmentation, inefficiency, and wastage in blood supply systems.
 
-# It connects:
+# It connects::
 - 🏛 District Health Authorities
 - 🏦 Blood Banks
 - 🏥 Hospitals
