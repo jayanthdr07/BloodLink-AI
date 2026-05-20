@@ -5,9 +5,6 @@
     "name": {
       "type": "string"
     },
-    "phone": {
-      "type": "string"
-    },
     "vehicle_type": {
       "type": "string",
       "enum": [
