@@ -20,9 +20,7 @@
     "entity_type": {
       "type": "string"
     },
-    "entity_id": {
-      "type": "string"
-    },
+   
     "user_email": {
       "type": "string"
     },
