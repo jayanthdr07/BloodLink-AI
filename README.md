@@ -21,8 +21,6 @@ During healthcare crises (e.g., COVID-19, accident surges, surgical backlogs), b
 -  No standardized pricing or transparency
 -  No real-time audit tracking
 ---
-
-
 ## Failure Cases Observed.
 - Fragmented Inventory Systems
 
